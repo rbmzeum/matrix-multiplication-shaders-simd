@@ -16,27 +16,27 @@ layout(set = 0, binding = 2) buffer writeonly MatrixC {
 };
 
 void main() {
-    const uint row = gl_GlobalInvocationID.x;
+    const uint row = gl_GlobalInvocationID.x * 1024;
     const uint col = gl_GlobalInvocationID.y;
 
-    if(row >= 1024 || col >= 1024) {
+    if(row >= 1024 * 1024 || col >= 1024) {
         return;
     }
 
     int sum = 0;
-/*    for(uint i = 0; i < 1024; i++) {
-        sum += matrix_a[row * 1024 + i] * matrix_b[i * 1024 + col];
-    }*/
+
     for(uint i = 0; i < 1024; i += 8) {
-	sum += matrix_a[row * 1024 + i] * matrix_b[i * 1024 + col];
-	sum += matrix_a[row * 1024 + i + 1] * matrix_b[(i+1) * 1024 + col];
-	sum += matrix_a[row * 1024 + i + 2] * matrix_b[(i+2) * 1024 + col];
-	sum += matrix_a[row * 1024 + i + 3] * matrix_b[(i+3) * 1024 + col];
-	sum += matrix_a[row * 1024 + i + 4] * matrix_b[(i+4) * 1024 + col];
-	sum += matrix_a[row * 1024 + i + 5] * matrix_b[(i+5) * 1024 + col];
-	sum += matrix_a[row * 1024 + i + 6] * matrix_b[(i+6) * 1024 + col];
-	sum += matrix_a[row * 1024 + i + 7] * matrix_b[(i+7) * 1024 + col];
+	uint r = row + i;
+	uint j = i * 1024 + col;
+	sum += matrix_a[r] * matrix_b[j];
+	sum += matrix_a[r + 1] * matrix_b[j + 1024];
+	sum += matrix_a[r + 2] * matrix_b[j + 2048];
+	sum += matrix_a[r + 3] * matrix_b[j + 3072];
+	sum += matrix_a[r + 4] * matrix_b[j + 4096];
+	sum += matrix_a[r + 5] * matrix_b[j + 5120];
+	sum += matrix_a[r + 6] * matrix_b[j + 6144];
+	sum += matrix_a[r + 7] * matrix_b[j + 7168];
     }
 
-    matrix_c[row * 1024 + col] = sum;
+    matrix_c[row + col] = sum;
 }
