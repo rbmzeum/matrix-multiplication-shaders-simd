@@ -16,7 +16,7 @@ layout(set = 0, binding = 2) buffer writeonly MatrixC {
 };
 
 void main() {
-    const uint row = gl_GlobalInvocationID.x * 1024;
+    const uint row = gl_GlobalInvocationID.x << 10;
     const uint col = gl_GlobalInvocationID.y;
 
     if(row >= 1024 * 1024 || col >= 1024) {
@@ -27,7 +27,7 @@ void main() {
 
     for(uint i = 0; i < 1024; i += 8) {
 	uint r = row + i;
-	uint j = i * 1024 + col;
+	uint j = (i << 10) + col;
 	sum += matrix_a[r] * matrix_b[j];
 	sum += matrix_a[r + 1] * matrix_b[j + 1024];
 	sum += matrix_a[r + 2] * matrix_b[j + 2048];
